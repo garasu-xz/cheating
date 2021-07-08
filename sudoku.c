@@ -3,13 +3,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <memory.h>
 
-#define CAN(x) (1 << (x))     //候选数 mask
-#define NUM CAN(10)         //已填写标识位
-#define BLANK ((NUM)-2)     //未标记初始值
+#define CAN(x) (1 << (x)) //候选数 mask
+#define NUM CAN(10)       //已填写标识位
+#define BLANK ((NUM)-2)   //未标记初始值
 
-#define IS_NUM(i, j) (grid[i][j]&NUM) //是否已经填写
+#define IS_NUM(i, j) (grid[i][j] & NUM) //是否已经填写
 
 #define START(i) i / 3 * 3  //获取当前格所在块的起始行/列
 #define END(i) START(i) + 3 //获取当前格所在块的末尾行/列
@@ -27,7 +26,7 @@ short grid[9][9];
 void mark();
 /* 清除不可能候选数 */
 void clean();
-/* 更新: 
+/* 更新:
  * 1. 某格只剩一个候选数
  * 2. 当前行、列、块內某格候选数只在此格可填
  * 遇到上述情况，将这个格子填充为这个候选数
@@ -46,15 +45,15 @@ int main(int argc, char *argv[]) {
 }
 
 void mark() {
-    for each(i, 0, 9) {
-        for each(j, 0, 9) {
+    for each (i, 0, 9) {
+        for each (j, 0, 9) {
             if (!IS_NUM(i, j)) continue;
-            for each(k, 0, 9) {
+            for each (k, 0, 9) {
                 if (!IS_NUM(i, k)) grid[i][k] &= ~grid[i][j];
                 if (!IS_NUM(k, j)) grid[k][j] &= ~grid[i][j];
             }
-            for each(k, START(i), END(i)) {
-                for each(l, START(j), END(j)) {
+            for each (k, START(i), END(i)) {
+                for each (l, START(j), END(j)) {
                     if (!IS_NUM(k, l)) grid[k][l] &= ~grid[i][j];
                 }
             }
@@ -62,14 +61,12 @@ void mark() {
     }
 }
 
-void clean() {
-
-}
+void clean() {}
 
 int update() {
     int cnt = 0;
-    for each(i, 0, 9) {
-        for each(j, 0, 9) {
+    for each (i, 0, 9) {
+        for each (j, 0, 9) {
             if (!IS_NUM(i, j)) {
                 //唯一候选数
                 if (get_num(grid[i][j])) {
@@ -80,24 +77,20 @@ int update() {
                 //当前行
                 tmp = mask = grid[i][j];
                 grid[i][j] = 0;
-                for each(k, 0, 9) {
-                    mask &= ~grid[i][k];
-                }
+                for each (k, 0, 9) mask &= ~grid[i][k];
                 if (mask) goto fill;
                 else grid[i][j] = tmp;
                 //当前列
                 tmp = mask = grid[i][j];
                 grid[i][j] = 0;
-                for each(k, 0, 9) {
-                    mask &= ~grid[k][j];
-                }
+                for each (k, 0, 9) mask &= ~grid[k][j];
                 if (mask) goto fill;
                 else grid[i][j] = tmp;
                 //当前块
                 tmp = mask = grid[i][j];
                 grid[i][j] = 0;
-                for each(k, START(i), END(i)) {
-                    for each(l, START(j), END(j)) {
+                for each (k, START(i), END(i)) {
+                    for each (l, START(j), END(j)) {
                         mask &= ~grid[k][l];
                     }
                 }
@@ -107,7 +100,7 @@ int update() {
                 }
 
                 goto fill;
-fill:           
+            fill:
                 grid[i][j] = mask | NUM;
                 cnt++;
             }
@@ -144,24 +137,26 @@ void read_data(const char *filename) {
 
 short get_num(short mask) {
     mask &= BLANK;
-    for each(i, 1, 10) {
-        if (CAN(i) == mask) return i;
+    for each (i, 1, 10) {
+        if (CAN(i) == mask)
+            return i;
     }
     return 0;
 }
 
 void print_data(int status) {
     printf("+---------------------------------+---------------------------------+---------------------------------+\n");
-    for each(i, 0, 9) {
+    for each (i, 0, 9) {
         printf("|");
-        for each(j, 0, 9) {
+        for each (j, 0, 9) {
             if (IS_NUM(i, j)) {
                 printf("[    %d    ]", get_num(grid[i][j]));
             } else {
                 char mask[12] = "[         ]";
                 if (status) {
-                    for each(k, 1, 10) {
-                        if (CAN(k) & grid[i][j]) mask[k] = '0' + k;
+                    for each (k, 1, 10) {
+                        if (CAN(k) & grid[i][j])
+                            mask[k] = '0' + k;
                     }
                 }
                 printf("%s", mask);
